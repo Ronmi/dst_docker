@@ -2,7 +2,7 @@
 
 . /lib/lsb/init-functions
 
-BASEDIR="$(dirname $0)/servers"
+BASEDIR=$(readlink -fn "$(dirname $0)/servers")
 
 function help() {
     echo "Usage: $0 action server"
@@ -53,7 +53,7 @@ function update_baseimage() {
     log_action_end_msg $?
 
     log_action_begin_msg "Running update.sh"
-    docker run -it -u dst --name dstserver_upgrade dstserver /home/dst/update.sh > /dev/null 2>&1
+    docker run -it -u dst --name dstserver_upgrade --entrypoint /home/dst/update.sh dstserver > /dev/null 2>&1
     log_action_end_msg $?
 
     log_action_begin_msg "Commit dstserver_upgrade to dstserver"
@@ -61,13 +61,8 @@ function update_baseimage() {
     log_action_end_msg $?
 
     log_action_begin_msg "Remove dstserver_upgrade container"
-    docker rm dstserver_upgrade
+    docker rm dstserver_upgrade > /dev/null
     log_action_end_msg $?
-
-    #log_action_begin_msg "Rebuilding base docker image"
-    #docker rmi dstserver > /dev/null 2>&1
-    #docker build -t dstserver $HOME/dst
-    #log_action_end_msg $?
 }
 
 function update() {
