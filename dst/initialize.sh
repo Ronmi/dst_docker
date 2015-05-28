@@ -24,7 +24,7 @@ fi
 
 # grab steam-cli
 sudo -u dst -H -n -- wget -O /home/dst/steam.tgz http://media.steampowered.com/installer/steamcmd_linux.tar.gz
-sudo -u dst -H -n -- tar zxf /home/dst/steam.tgz -C /home/dst
+sudo -u dst -H -n -- tar zxvf /home/dst/steam.tgz -C /home/dst
 
 # run update for the first time
 sudo -u dst -H -n -- /home/dst/update.sh
