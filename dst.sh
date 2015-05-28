@@ -2,7 +2,7 @@
 
 . /lib/lsb/init-functions
 
-BASEDIR=$(readlink -fn "$(dirname $0)/servers")
+BASEDIR="$(dirname "$(readlink -fn "$0")")/servers"
 
 function help() {
     echo "Usage: $0 action server"
