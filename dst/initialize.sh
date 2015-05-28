@@ -13,9 +13,7 @@ function i386() {
 
 
 # test whether running i386 or amd64
-uname -r | grep amd64
-
-if [[ $? == 0 ]]
+if [[ $(uname -m) == "x86_64" ]]
 then
     amd64
 else
