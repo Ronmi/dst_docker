@@ -43,7 +43,7 @@ function create() {
     FN="$BASEDIR/$1/settings.ini"
     PORT=$(grep -F server_port "$FN" | sed 's/ //g' | cut -d '=' -f 2)
     log_action_begin_msg "Creating container $CONTAINER (port $PORT)"
-    docker create -v $BASEDIR/$1:/home/dst/.klei/DoNotStarveTogether --entrypoint /home/dst/dstserver/bin/dontstarve_dedicated_server_nullrenderer --name $CONTAINER -p $PORT:$PORT/udp dstserver > /dev/null 2>&1
+    docker create -v $BASEDIR/$1:/home/dst/.klei/DoNotStarveTogether --entrypoint /home/dst/start.sh --name $CONTAINER -p $PORT:$PORT/udp dstserver > /dev/null 2>&1
     log_action_end_msg $?
 }
 
