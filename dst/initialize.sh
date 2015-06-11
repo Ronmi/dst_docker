@@ -3,12 +3,12 @@
 function amd64() {
     dpkg --add-architecture i386
     apt-get update
-    apt-get -y install lib32gcc1 lib32stdc++6 libcurl4-gnutls-dev:i386
+    apt-get -y install lib32gcc1 lib32stdc++6 libcurl4-gnutls-dev:i386 wget sudo
 }
 
 function i386() {
     apt-get update
-    apt-get -y install libcurl4-gnutls-dev libgcc1
+    apt-get -y install libcurl4-gnutls-dev libgcc1 wget sudo
 }
 
 

@@ -2,12 +2,51 @@
 
 . /lib/lsb/init-functions
 
-BASEDIR="$(dirname "$(readlink -fn "$0")")/servers"
+MY_DIR="$(dirname "$(readlink -fn "$0")")"
+BASEDIR="${MY_DIR}/servers"
+DIRS=$(find "$BASEDIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+
+function removeall() {
+    for i in $DIRS
+    do
+	stop $i
+	remove $i
+    done
+}
+
+function createall() {
+    for i in $DIRS
+    do
+	create $i
+    done
+}
+
+function do_install() {
+    USER_ID=$(id -u)
+
+    echo "FROM debian:jessie
+MAINTAINER Ronmi Ren <ronmi.ren@gmail.com>
+RUN useradd -d /home/dst -U -u $USER_ID -m dst
+COPY initialize.sh /initialize.sh
+COPY start.sh /home/dst/start.sh
+COPY update.sh /home/dst/update.sh
+RUN chown -R dst:dst /home/dst && /initialize.sh
+USER $USER_ID
+WORKDIR /home/dst/dstserver/bin
+" | tee "${MY_DIR}/dst/Dockerfile"
+
+    docker build -t dstserver "${MY_DIR}/dst"
+}
+
+function do_uninstall() {
+    removeall
+    docker rmi -f dstserver
+}
 
 function help() {
     echo "Usage: $0 action server"
     echo ""
-    echo "Valid actions: start stop restart reset remove create update"
+    echo "Valid actions: start stop restart reset remove create update create-all remove-all install uninstall"
     exit 1
 }
 
@@ -50,7 +89,7 @@ function create() {
 function update_baseimage() {
     log_action_begin_msg "Force removing dstserver_upgrade container"
     docker rm -f dstserver_upgrade > /dev/null 2>&1
-    log_action_end_msg $?
+    log_action_end_msg
 
     log_action_begin_msg "Running update.sh"
     docker run -it -u dst --name dstserver_upgrade --entrypoint /home/dst/update.sh dstserver > /dev/null 2>&1
@@ -66,19 +105,8 @@ function update_baseimage() {
 }
 
 function update() {
-    DIRS=$(find "$BASEDIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
-    for i in $DIRS
-    do
-	stop $i
-	remove $i
-    done
-
+    removeall
     update_baseimage
-
-    for i in $DIRS
-    do
-	create $i
-    done
 }
 
 
@@ -87,7 +115,7 @@ then
     help
 fi
 
-if [[ "$1" != "update" && "$2" == "" ]]
+if [[ "$1" != "update" && "$1" != "uninstall" && "$1" != "install" && "$1" != "remove-all" && "$1" != "create-all" && "$2" == "" ]]
 then
     help
 fi
@@ -120,6 +148,18 @@ case "$ACTION" in
 	;;
     update)
 	update
+	;;
+    install)
+	do_install
+	;;
+    uninstall)
+	do_uninstall
+	;;
+    create-all)
+	createall
+	;;
+    remove-all)
+	removeall
 	;;
     *)
 	help

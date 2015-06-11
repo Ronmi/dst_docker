@@ -5,7 +5,7 @@ MOD=/home/dst/dstserver/mods/dedicated_server_mods_setup.lua
 ORIG=/home/dst/.klei/DoNotStarveTogether/dedicated_server_mods_setup.lua
 if [[ -f $ORIG ]]
 then
-    ln -sf $ORIG $MOD
+    cp -f $ORIG $MOD
 fi
 
 # start server
