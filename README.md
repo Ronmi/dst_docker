@@ -11,9 +11,6 @@ See wiki pages on github for detailed usage.
 
 ## Synopsis
 
-You need proper privilege to use docker.
-If you have no idea about it, use `sudo`.
-
 ```sh
 dst.sh install # run once only
 ```
