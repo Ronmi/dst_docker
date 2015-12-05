@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "dash dash/sh boolean false" | debconf-set-selections
+DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+
 function amd64() {
     dpkg --add-architecture i386
     apt-get update
