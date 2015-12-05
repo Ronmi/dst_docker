@@ -35,6 +35,16 @@ dst.sh start myserver
 - `dst.sh reset dirname`: stop the server, `rm -fr servers/subdir/save` then start the server
 - `dst.sh update`: update DST server software
 
+## Sharding
+
+`dst.sh` supports sharding after 0.5.
+
+For master, `bind_ip` MUST set to `0.0.0.0`.
+
+For slave, you should use `dst_SERVERNAME` as `master_ip`, and add a special setting `master_link = true` in your `settings.ini`.
+
+See `example/` for example.
+
 ## License
 
 GPLv1 or newer version.
