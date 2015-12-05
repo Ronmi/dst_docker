@@ -89,8 +89,25 @@ function create() {
     CONTAINER="dst_$1"
     FN="$BASEDIR/$1/settings.ini"
     PORT=$(grep -F server_port "$FN" | sed 's/ //g' | cut -d '=' -f 2)
-    log_action_begin_msg "Creating container $CONTAINER (port $PORT)"
-    $SUDO docker create -v $BASEDIR/$1:/home/dst/.klei/DoNotStarveTogether --entrypoint /home/dst/start.sh --name $CONTAINER -p $PORT:$PORT/udp dstserver > /dev/null 2>&1
+    ISMASTER=$(grep -F is_master "$FN" | sed 's/ //g' | cut -d '=' -f 2)
+    MASTERPORT=$(grep -F master_port "$FN" | sed 's/ //g' | cut -d '=' -f 2)
+    MASTERLINK=$(grep -F master_link "$FN" | sed 's/ //g' | cut -d '=' -f 2)
+    MASTERIP=$(grep -F master_ip "$FN" | sed 's/ //g' | cut -d '=' -f 2)
+    MAS_MSG=""
+    MAS_CMD=""
+    if [[ $ISMASTER == "true" ]]
+    then
+        MAS_MSG=" master port $MASTERPORT"
+        MAS_CMD="-p $MASTERPORT:$MASTERPORT/udp"
+    else
+        if [[ $MASTERLINK == "true" ]]
+        then
+            MAS_MSG=" link to $MASTERIP"
+            MAS_CMD="--link $MASTERIP:$MASTERIP"
+        fi
+    fi
+    log_action_begin_msg "Creating container $CONTAINER (port $PORT$MAS_MSG)"
+    $SUDO docker create -v $BASEDIR/$1:/home/dst/.klei/DoNotStarveTogether --entrypoint /home/dst/start.sh --name $CONTAINER -p $PORT:$PORT/udp $MAS_CMD dstserver > /dev/null 2>&1
     log_action_end_msg $?
 }
 
